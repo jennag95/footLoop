@@ -1,6 +1,6 @@
-command: ./Rloops.pl -n <gene name> -t <minimum conversion threshold> -l <minimum length> -r <path to reads pacbio.fastq file> -q <minimum quality> -s <path to gene seq> -g <path to reference genome for mapping>
+command: ./footLoop.pl -n <gene name> -t <minimum conversion threshold> -l <minimum length> -r <path to reads pacbio.fastq file> -q <minimum quality> -s <path to gene seq> -g <path to reference genome for mapping>
 
-example command: ./Rloops.pl -n CALM3 -t .75 -l 100 -r ./pacbio.fastq -q 0 -s ./CALM3seq.txt -g /home/mitochi/Bowtie2_indexes/hg19/hg19.fa.fa -c
+example command: ./footLoop.pl -n CALM3 -t .75 -l 100 -r ./pacbio.fastq -q 0 -s ./CALM3seq.txt -g /home/mitochi/Bowtie2_indexes/hg19/hg19.fa.fa -c
 
 required options:
 -n : name of the gene you want to generate heatmaps for (must be in all CAPS)
