@@ -15,6 +15,8 @@ optional option:
 -c : consider cytosines in CpG context
 
 
+***Before running the script, a bed file must be present in the same directory as the script. This bed file should contain all loci. The starting position must be 50 bp upstream of 5' PCR primer and the ending position must be 50 bp downstream of 3' PCR primer. This bed file must be named geneIndexes.bed***
+
 
 If a .sam file doesn't already exist, the user is prompted to enter the chromosome number, starting and ending index of the PCR product, and the gene name (all separated by tabs). This is then used to create a .bed file that bedtools uses to create a .fa file. This geneIndexes.fa file is used by bismark to map the reads in pacbio.fastq. The mapped reads are contained in the .sam file. 
 
@@ -36,3 +38,4 @@ Positions are then marked as follows with the color in parenthesis being its rep
 Footprints are determined based on a sliding window method. The window size is the -l option entered by the user. If the percentage of converted cytosines is above the threshold specified by the user (-t option), all the converted cytosines are labelled as a footprint. 
 
 The final heatmaps are saved in the same folder as the script and labelled as <gene name> <pos/neg> <conversion threshold> <CG if -c option is used>.pdf
+A log file is also saved in the same folder as the script and named <gene name>logFile.txt. It contains statistics for mapping and peak calling.

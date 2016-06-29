@@ -4,7 +4,7 @@ use warnings; use strict; use colorz; use Getopt::Std;
 use vars qw($opt_n $opt_t $opt_l $opt_r $opt_q $opt_s $opt_g $opt_c);
 getopts("n:t:l:r:q:s:g:c");
 
-my $usage = "Usage: $YW$0$N ${GN}[options]$N -n $CY<gene name>$N -t $CY<conversion threshold>$N -l $CY<minimum R-loop length>$N -r $CY<path to reads>$N -q $CY<minimum mapping quality for each read to be considered>$N -s $CY<path to original gene sequence>$N -g $CY<path to reference genome for indexing>$N 
+my $usage = "Usage: $YW$0$N ${GN}[options]$N -n $CY<gene name>$N -t $CY<conversion threshold>$N -l $CY<minimum R-loop length>$N -r $CY<path to reads>$N -q $CY<minimum mapping quality for each read to be considered>$N -s $CY<path to original gene sequence>$N -g $CY<path to reference genome for indexing>$N
 
 ${GN}Options:$N
 -c: consider Cs in CpG context
@@ -24,31 +24,17 @@ die $usage if not ($opt_n) or not ($opt_t) or not ($opt_l) or not ($opt_r) or no
 #runs bismark (output file will be pacbio.fastq_bismark_bt2.sam) only if it hasn't been ran previously
 unless(-e "./pacbio.fastq_bismark_bt2.sam")
 {
-	#allows user to enter coordinates of PCR primers to create indexes for genes. Genes are indexed +/- 50bp on either side. 
-	my $geneIndexes = "geneIndexes.bed";
-	open(my $indexFile, ">", $geneIndexes) or die "Could not open $geneIndexes: $!";
+	if( -e "./geneIndexes.bed")
+   {	
+     system("bedtools getfasta -fi $opt_g -bed geneIndexes.bed -fo geneIndexes.fa -name");
+   }
+   else
+   {
+      die "$YW Error:$N geneIndexes.bed does not exist in this directory";
+   }
+	system("bismark_genome_preparation --bowtie2 ./ > /dev/null");
 
-	my $user = "y";
-	print "Gene indexes:\n";
-	while($user eq "y")
-	{	
-		print "Enter chromosome number(e.g. chr2) followed by starting coordinate, ending coordinate, and gene name(in all caps). Each field should be separated by tab.\n";
-		my $index = <STDIN>;
-		my @indexes = split("\t", $index);
-		$indexes[1] -= 50;
-		$indexes[2] += 50;
-		my $ind = join("\t", @indexes);
-		print $indexFile "$ind"; 
-		print "Would you like to input another index? (y or n)\n";
-		$user = <STDIN>;
-		chomp($user);
-	}
-
-   system("bedtools getfasta -fi $opt_g -bed geneIndexes.bed -fo geneIndexes.fa -name");
-
-	system("bismark_genome_preparation --bowtie2 ./");
-
-   system("bismark --bowtie2 --rdg 2,1 --rfg 2,1 --score_min L,0,-0.8 ./ $opt_r") == 0 or die "Failed to run bismark: $!\n";
+   system("bismark --bowtie2 --rdg 2,1 --rfg 2,1 --score_min L,0,-0.8 ./ $opt_r > /dev/null") == 0 or die "Failed to run bismark: $!\n";
 }
 
 #takes sequence of gene and splits into array of individual bases
@@ -64,13 +50,15 @@ open(my $negativeReads, ">", $negative) or die "Could not open $negative: $!";
 my $samFile = "pacbio.fastq_bismark_bt2.sam";
 open(my $sam, $samFile) or die "Could not open $samFile: $!";
 
+my $logFile = $opt_n . "logFile.txt";
+open(my $fh, '>', $logFile);
+
 my $countSAM = "countSAM.txt";
 `grep "$opt_n" $samFile > $countSAM`;
 
 my $countS = `wc -l < $countSAM`;
-print"
-$CY Number of reads in SAM file (positive and negative):$N $countS
-";
+`rm countSAM.txt`;
+print $fh "Number of reads in SAM file (positive and negative): $countS";
 
 #loops through each read and writes high quality reads into two separate files <gene>Positive.txt and <gene>Negative.txt
 while(my $line = <$sam>)
@@ -106,10 +94,10 @@ while(my $line = <$sam>)
 my $passedFilterP = `wc -l < $positive`;
 my $passedFilterN = `wc -l < $negative`;
 
-print"
-$CY Reads that passed filters:$N
-   ${GN}Positive:$N $passedFilterP
-   ${GN}Negative:$N $passedFilterN
+print $fh "
+Reads that passed filters:
+   Positive: $passedFilterP
+   Negative: $passedFilterN
 ";
 
 my $CPGpos = "CpG_context_" . $positive;
@@ -345,12 +333,14 @@ my $countRloopN = "countRloopN.txt";
 my $countP = `wc -l < $countRloopP`;
 my $countN = `wc -l < $countRloopN`;
 
-print"
-$CY Number of reads containing Rloops (top 1000 displayed in HeatMap)$N
-   ${GN}Positive:$N $countP
-   ${GN}Negative:$N $countN
+print $fh "
+Number of reads containing footprints:
+   Positive: $countP
+   Negative: $countN
 ";
 
+`rm $countRloopP`;
+`rm $countRloopN`;
 #makes heatmaps for positive and negative strand
 my $finalPosPDF = $opt_n . "Pos" . ($opt_t*100) . ".pdf";
 my $finalNegPDF = $opt_n . "Neg" . ($opt_t*100) . ".pdf";
