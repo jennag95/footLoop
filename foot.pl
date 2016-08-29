@@ -28,25 +28,8 @@ our $LRD    ="\e[1;31m";
 our $LPR    ="\e[1;35m";
 our $DIES   ="${LRD}!!!\t$N";
 
-our @EXPORT = qw(dat date getFilename getFullpath parseExon checkBismarkIndex $DIES $N $B $BL $BU $GN $CY $RD $PR $BR $GR $YW $WT $DGR $LBU $LGN $LCY $LRD $LPR date );
+our @EXPORT = qw(getFilename getFullpath parseExon checkBismarkIndex $DIES $N $B $BL $BU $GN $CY $RD $PR $BR $GR $YW $WT $DGR $LBU $LGN $LCY $LRD $LPR);
 #################################
-
-sub sys {
-	my ($cmd, $err, $log) = @_;
-	my $res = system($cmd);
-	$res == 0 ? $log .= date() . " $cmd\n" : $err .= err() . " Failed to $cmd: $!\n";
-	return($err, $log, $res);
-}
-
-sub err {
-	my $err = "$LRD[$date]!!! ERROR$N";
-	return($err);
-}
-
-sub dat {
-	my $dat = "$YW[$date]$N";
-	return($dat);
-}
 
 sub checkBismarkIndex {
 	my ($geneIndexes, $outLog) = @_;
@@ -78,15 +61,6 @@ sub getDate {
    my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
    my $date = "$mday $months[$mon] $year $hour:$min:$sec";
    my $timenow = $hour * 3600 + $min * 60 + $sec;
-   return($date);
-}
-
-sub date {
-   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time); $year += 1900;
-   my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
-   my ($mon2) = $mon =~ /^\d$/ ? 0 . $mon : $mon;
-   my ($year2) = $year =~ /^\d\d(\d\d)$/; die if not defined($year2);
-   my $date = $year2 . $mon2 . $mday . "_$hour\_$min\_$sec";
    return($date);
 }
 
