@@ -1,0 +1,10 @@
+
+SANITY:
+[1;33m[160729_17301][0m: /home/mitochi/shared/footLoop_example/pacbio12index_original.bed is a BED4+ file :)
+[1;33m[160729_17301][0m: [1;33m1. Getting fasta sequence from /home/mitochi/shared/footLoop_example/pacbio12index_original.bed into [0;36m/home/mitochi/Bismark_indexes/footLoop/f451f1feef4bb9bdf97db106e9937836/geneIndexes.fa[0m
+[1;33m[160729_17301][0m:	[0;32mSUCCESS[0m: [0;36m/home/mitochi/Bismark_indexes/footLoop/f451f1feef4bb9bdf97db106e9937836/Bisulfite_Genome[0m already exist and is used!
+
+
+ERRORS:
+
+RUN_ID 160729_17301_5

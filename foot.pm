@@ -1,4 +1,4 @@
-perlpackage foot;
+package foot;
 
 use strict; use warnings; 
 #use Exporter;
@@ -28,10 +28,10 @@ our $LRD    ="\e[1;31m";
 our $LPR    ="\e[1;35m";
 our $DIES   ="${LRD}!!!\t$N";
 
-our @EXPORT = qw(dat date getFilename getFullpath parseExon checkBismarkIndex $DIES $N $B $BL $BU $GN $CY $RD $PR $BR $GR $YW $WT $DGR $LBU $LGN $LCY $LRD $LPR date );
+our @EXPORT = qw(MYSYS err dat getFilename getFullpath parseExon checkBismarkIndex $DIES $N $B $BL $BU $GN $CY $RD $PR $BR $GR $YW $WT $DGR $LBU $LGN $LCY $LRD $LPR date );
 #################################
 
-sub sys {
+sub MYSYS {
 	my ($cmd, $err, $log) = @_;
 	my $res = system($cmd);
 	$res == 0 ? $log .= date() . " $cmd\n" : $err .= err() . " Failed to $cmd: $!\n";
@@ -39,12 +39,12 @@ sub sys {
 }
 
 sub err {
-	my $err = "$LRD[$date]!!! ERROR$N";
+	my $err = "$LRD\[" . date() . "]!!! ERROR$N:";
 	return($err);
 }
 
 sub dat {
-	my $dat = "$YW[$date]$N";
+	my $dat = "$YW\[" . date() . "]$N:";
 	return($dat);
 }
 
@@ -86,7 +86,7 @@ sub date {
    my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
    my ($mon2) = $mon =~ /^\d$/ ? 0 . $mon : $mon;
    my ($year2) = $year =~ /^\d\d(\d\d)$/; die if not defined($year2);
-   my $date = $year2 . $mon2 . $mday . "_$hour\_$min\_$sec";
+   my $date = $year2 . $mon2 . $mday . "_$hour$min$sec";
    return($date);
 }
 
